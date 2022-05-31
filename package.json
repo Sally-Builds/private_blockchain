@@ -1,0 +1,26 @@
+{
+  "name": "private_blockchain",
+  "version": "1.0.0",
+  "description": "A simple mini private blockchain",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sally-Builds/private_blockchain.git"
+  },
+  "keywords": [
+    "Blockchain",
+    "private",
+    "blockchain",
+    "nodejs",
+    "blockchain"
+  ],
+  "author": "Uzoagulu Joshua",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sally-Builds/private_blockchain/issues"
+  },
+  "homepage": "https://github.com/Sally-Builds/private_blockchain#readme"
+}
