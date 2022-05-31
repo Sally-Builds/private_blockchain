@@ -1,6 +1,8 @@
+//block data model
 {
     hash: "",
-    previousHash: "",
+    height: 0,
+    previousBlockHash: "",
     time: "",
-    data: ""
+    body: []
 }

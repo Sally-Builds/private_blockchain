@@ -4,7 +4,7 @@
   "description": "A simple mini private blockchain",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon simpleChain.js"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,11 @@
   "bugs": {
     "url": "https://github.com/Sally-Builds/private_blockchain/issues"
   },
-  "homepage": "https://github.com/Sally-Builds/private_blockchain#readme"
+  "homepage": "https://github.com/Sally-Builds/private_blockchain#readme",
+  "dependencies": {
+    "crypto-js": "^4.1.1",
+    "level": "^8.0.0",
+    "leveldown": "^6.1.1",
+    "levelup": "^5.1.1"
+  }
 }
