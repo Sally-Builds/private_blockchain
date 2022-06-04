@@ -29,7 +29,7 @@ class Blockchain {
             const genesisBlock = new Block('genesis block')
             genesisBlock.height = blockchainCount
             genesisBlock.time = new Date().getTime().toString().slice(0, -3)
-            genesisBlock.hash = SHA256(JSON.stringify(genesisBlock)).toString() 
+            genesisBlock.hash = SHA256(genesisBlock).toString() 
             const genesis = await this.DB.addLevelDBData(0, JSON.stringify(genesisBlock).toString())
             console.log(genesis)
         }
@@ -38,7 +38,7 @@ class Blockchain {
         console.log(blockchainCount, 'new block')
         block.height = blockchainCount
         block.time = new Date().getTime().toString().slice(0, -3)
-        const hash = SHA256(JSON.stringify(block)).toString() 
+        const hash = SHA256(block).toString() 
         block.hash = hash
         const previousHash = await this.DB.getLevelDBData(blockchainCount - 1)
         block.previousBlockHash = JSON.parse(previousHash).hash
@@ -67,11 +67,10 @@ class Blockchain {
      // Validate if Block is being tampered by Block Height
      async validateBlock(height) {
        const block = JSON.parse(await this.getBlock(height))
-       console.log(block)
        const blockHash = await block.hash
         
        block.hash = ""
-       const verfiyHash = SHA256(JSON.stringify(block)).toString()
+       const verfiyHash = SHA256(block).toString()
 
        console.log(verfiyHash, blockHash)
        if(verfiyHash === blockHash) return true
