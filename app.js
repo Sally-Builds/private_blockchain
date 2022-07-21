@@ -1,66 +1,38 @@
-const Block = require('./Block')
-const Blockchain = require('./Blockchain')
-const DB = require('./initDB')
-const SHA256 = require('crypto-js/sha256')
+const express = require('express')
+const blockchainController = require('./blockchainController')
 
-class App {
-    constructor() {
-        this.Blockchain = new Blockchain()
+
+class Application {
+    app = express()
+
+    constructor(port) {
+        this.port = port
+        this.BlockchainController = new blockchainController()
+        this.initializeMiddleware()
+        this.initializeRouter()
     }
 
-    async create(nBlock) {
-        try {
-            for(let i = 0; i<nBlock; i++) {
-                const randomData = `${Math.random() + i}`
-                // const block = new Block(randomData)
-                const res = await this.Blockchain.addBlock(new Block(randomData))
-                console.log(res)
-                }
-            //    this.Blockchain.getBlockHeight().then(res => console.log(res)).catch(err => console.log(err))
-        } catch (error) {
-            console.log(error)
-        }
+    initializeMiddleware() {
+        this.app.use(express.json())
     }
 
-    async numOfBlocks() {
-        const num = await this.Blockchain.getBlockHeight()
-        return num
+    initializeRouter() {
+        this.app.post('/api/block', this.BlockchainController.createBlock)
+        this.app.get('/api/block/:id', this.BlockchainController.getBlock)
+        this.app.get('/api/blockchain/validate', this.BlockchainController.validateBlockchain)
+        this.app.get('/api/blockchain', this.BlockchainController.blockchainSize)
+        this.app.get('/api/block/validate/:id', this.BlockchainController.validateBlock)
     }
 
-    async getBlock(height) {
-        const block = this.Blockchain.getBlock(height)
-        return block
-    }
 
-    async validateBlockchain() {
-        return await this.Blockchain.validateChain()
+    listen() {
+        this.app.listen((this.port), () => {
+            console.log(`Server is running on port ${this.port}`)
+        })
     }
-
-    async validateBlock(height) {
-        return await this.Blockchain.validateBlock(height)
-    }
-
-    // async createRead() {
-    // let i = 0;
-    // return new Promise((resolve, reject) => {
-    //         db.createReadStream().on('data', function(data) {
-    //             i++;
-    //           }).on('error', function(err) {
-    //               return console.log('Unable to read data stream!', err)
-    //               reject(err)
-    //           }).on('close', function() {
-    //             console.log('Block #' + i);
-    //             addLevelDBData(i, value);
-    //             resolve(i)
-    //           });
-    //     })
-    // }
 
 }
 
-const app = new App()
-// app.create(4)
-// app.numOfBlocks().then(res => console.log(res)).catch(err => console.log(err))
-// app.getBlock(0).then(res => console.log(res.toString())).catch(err => console.log(err))
-app.validateBlock(2).then(res => console.log(res.toString())).catch(err => console.log(err))
 
+const app = new Application(3000)
+app.listen()

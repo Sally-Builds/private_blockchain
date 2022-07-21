@@ -1,4 +1,5 @@
 const SHA256 = require('crypto-js/sha256')
+const { json } = require('express/lib/response')
 const Block = require('./Block')
 const LevelDB = require('./initDB')
 
@@ -16,8 +17,20 @@ class Blockchain {
     }
 
     async createGenesisBlock() {
-        const self = this
-        await this.addBlock(new Block(["genesis block"]))
+        let blockchainCount = await this.DB.getBlocksCount()
+        // const genesisBlock = new Block('genesis block')
+        const genesisBlock = {
+            hash: "",
+            height: 0,
+            previousBlockHash: "",
+            time: "",
+            body: "genesis block"
+        }
+        genesisBlock.height = blockchainCount
+        genesisBlock.time = new Date().getTime().toString().slice(0, -3)
+        genesisBlock.hash = SHA256(JSON.stringify(genesisBlock)).toString() 
+        await this.DB.addLevelDBData(0, JSON.stringify(genesisBlock).toString())
+        return await this.getBlockHeight()
     }
 
     async addBlock(block) {
@@ -25,27 +38,22 @@ class Blockchain {
         let blockchainCount = await this.DB.getBlocksCount()
         console.log(blockchainCount)
         if(blockchainCount == 0) {
-            console.log('eneterd here')
-            const genesisBlock = new Block('genesis block')
-            genesisBlock.height = blockchainCount
-            genesisBlock.time = new Date().getTime().toString().slice(0, -3)
-            genesisBlock.hash = SHA256(genesisBlock).toString() 
-            const genesis = await this.DB.addLevelDBData(0, JSON.stringify(genesisBlock).toString())
-            console.log(genesis)
+            blockchainCount = await this.createGenesisBlock()
         }
-        if(blockchainCount > 0) {
+        // if(blockchainCount > 0) {
         blockchainCount = await this.DB.getBlocksCount()
         console.log(blockchainCount, 'new block')
         block.height = blockchainCount
         block.time = new Date().getTime().toString().slice(0, -3)
-        const hash = SHA256(block).toString() 
+        const hash = SHA256(JSON.stringify(block)).toString() 
         block.hash = hash
         const previousHash = await this.DB.getLevelDBData(blockchainCount - 1)
         block.previousBlockHash = JSON.parse(previousHash).hash
         return await this.DB.addLevelDBData(blockchainCount, JSON.stringify(block).toString())
-        }
+        // }
         } catch (error) {
             console.log(error)
+            throw new Error(error)
         }
     }
 
@@ -60,8 +68,12 @@ class Blockchain {
 
      // Get Block By Height
      async getBlock(height) {
-        // return this.chain[height]
+        try {
+            // return this.chain[height]
         return this.DB.getLevelDBData(height)
+        } catch (error) {
+            throw new Error(error)
+        }
     }
 
      // Validate if Block is being tampered by Block Height
@@ -70,7 +82,7 @@ class Blockchain {
        const blockHash = await block.hash
         
        block.hash = ""
-       const verfiyHash = SHA256(block).toString()
+       const verfiyHash = SHA256(JSON.stringify(block)).toString()
 
        console.log(verfiyHash, blockHash)
        if(verfiyHash === blockHash) return true
@@ -79,13 +91,13 @@ class Blockchain {
     }
 
     // Validate Blockchain
-    validateChain() {
+    async validateChain() {
         // Add your code here
-        for(let i = 1; i <this.chain.length; i++) {
-            const hash = this.chain[i-1].hash
-            const previousHash = this.chain[i].previousBlockHash
-            console.log(this.chain[i])
-            console.log(i)
+        const blockHeight = await this.getBlockHeight()
+        const h = JSON.parse(await this.getBlock(4)).hash
+        for(let i = 1; i <blockHeight; i++) {
+            const hash = JSON.parse(await this.getBlock(i - 1)).hash
+            const previousHash = JSON.parse(await this.getBlock(i)).previousBlockHash
             if(hash === previousHash && this.validateBlock(i)) {
                 return true
             }

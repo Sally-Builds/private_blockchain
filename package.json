@@ -4,7 +4,7 @@
   "description": "A simple mini private blockchain",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon simpleChain.js"
+    "start": "nodemon app.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,10 @@
     "express": "^4.18.1",
     "level": "^8.0.0",
     "leveldown": "^6.1.1",
-    "levelup": "^5.1.1"
+    "levelup": "^5.1.1",
+    "bitcoinjs-lib": "^4.0.2",
+    "bitcoinjs-message": "^2.0.0",
+    "body-parser": "^1.18.3",
+    "hex2ascii": "0.0.3"
   }
 }

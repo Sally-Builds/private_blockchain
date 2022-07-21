@@ -17,7 +17,7 @@ class LevelSandbox {
             const val = await this.db.get(key)
             return val
         } catch (error) {
-            throw new Error(error)
+            throw new Error('block not found')
         }
     }
 
